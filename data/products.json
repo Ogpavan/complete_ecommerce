@@ -1,0 +1,154 @@
+[
+  {
+    "id": 46252549603573,
+    "name": "Enriched Duo",
+    "slug": "enriched-duo",
+    "price": 27,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-06-1.jpg?v=1736500658&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-06-1.jpg?v=1736500658&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-06-2.jpg?v=1736500658&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a..."
+  },
+  {
+    "id": 46252542198005,
+    "name": "Enriched Hand & Body Wash",
+    "slug": "enriched-hand-body-wash",
+    "price": 23,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-03-3.jpg?v=1736500607&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-03-3.jpg?v=1736500607&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-03-1.jpg?v=1736500607&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a..."
+  },
+  {
+    "id": 46252543148277,
+    "name": "Enriched Hand Wash",
+    "slug": "enriched-hand-wash",
+    "price": 25,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-05-1.jpg?v=1736500614&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-05-1.jpg?v=1736500614&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-05-2.jpg?v=1736500614&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a...",
+    "oldPrice": 85,
+    "badge": "Sale"
+  },
+  {
+    "id": 46252550226165,
+    "name": "Moisturizing Polishing Treatment",
+    "slug": "moisturizing-polishing-treatment",
+    "price": 45,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-10-1.jpg?v=1736500664&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-10-1.jpg?v=1736500664&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-10-3.jpg?v=1736500664&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a...",
+    "oldPrice": 75,
+    "badge": "Sale"
+  },
+  {
+    "id": 46252553044213,
+    "name": "Natural Coconut Cleansing Oil",
+    "slug": "natural-coconut-cleansing-oil",
+    "price": 21,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-12-1.jpg?v=1736500688&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-12-1.jpg?v=1736500688&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-12-4.jpg?v=1736500688&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a..."
+  },
+  {
+    "id": 46252552388853,
+    "name": "Nourishing Eye Cream",
+    "slug": "nourishing-eye-cream",
+    "price": 19,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-08-1.jpg?v=1736500681&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-08-1.jpg?v=1736500681&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-08-2.jpg?v=1736500681&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a..."
+  },
+  {
+    "id": 46252547342581,
+    "name": "Nourishing Moisture Mask",
+    "slug": "nourishing-moisture-mask",
+    "price": 35,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-09-1.jpg?v=1736500640&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-09-1.jpg?v=1736500640&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-09-2.jpg?v=1736500640&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a..."
+  },
+  {
+    "id": 46252544590069,
+    "name": "Perfecting Facial Oil",
+    "slug": "perfecting-facial-oil",
+    "price": 15,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-02-1.jpg?v=1736500620&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-02-1.jpg?v=1736500620&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-02-2.jpg?v=1736500620&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a...",
+    "oldPrice": 21,
+    "badge": "Sale"
+  },
+  {
+    "id": 46252548915445,
+    "name": "Scalp Moisturizing Cream",
+    "slug": "scalp-moisturizing-cream",
+    "price": 29,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-11-1.jpg?v=1736500652&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-11-1.jpg?v=1736500652&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-11-2.jpg?v=1736500652&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a..."
+  },
+  {
+    "id": 46252541247733,
+    "name": "Shield Conditioner",
+    "slug": "shield-conditioner",
+    "price": 27,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-01-2.jpg?v=1736500601&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-01-2.jpg?v=1736500601&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-01-1.jpg?v=1736500601&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a..."
+  },
+  {
+    "id": 46252551405813,
+    "name": "Shield Shampoo",
+    "slug": "shield-shampoo",
+    "price": 39,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-04-3.jpg?v=1736500674&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-04-3.jpg?v=1736500674&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-04-1.jpg?v=1736500674&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a...",
+    "oldPrice": 60,
+    "badge": "Sale"
+  },
+  {
+    "id": 46252546588917,
+    "name": "Shield Spray",
+    "slug": "shield-spray",
+    "price": 37,
+    "image": "https://glowing-theme.myshopify.com/cdn/shop/files/product-07-1.jpg?v=1736500635&width=900",
+    "images": [
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-07-1.jpg?v=1736500635&width=900",
+      "https://glowing-theme.myshopify.com/cdn/shop/files/product-07-2.jpg?v=1736500635&width=900"
+    ],
+    "description": "For Normal, Oily, Combination Skin Types Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Say hello to flawless, long-lasting foundation that comes in 7 melt-into-your-skin shades. This lightweight, innovative formula creates a..."
+  }
+]

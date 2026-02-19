@@ -1,0 +1,40 @@
+{
+  "name": "ecommerce-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:push": "prisma db push",
+    "prisma:seed": "prisma db seed",
+    "prisma:reset": "prisma db push --force-reset && prisma db seed"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.2",
+    "@radix-ui/react-separator": "^1.1.8",
+    "@radix-ui/react-slot": "^1.2.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.574.0",
+    "next": "latest",
+    "prisma": "^6.19.2",
+    "react": "latest",
+    "react-dom": "latest",
+    "tailwind-merge": "^3.4.1",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "latest",
+    "@types/node": "25.2.3",
+    "@types/react": "19.2.14",
+    "autoprefixer": "latest",
+    "postcss": "latest",
+    "tailwindcss": "latest",
+    "typescript": "latest"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}
