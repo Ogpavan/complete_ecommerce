@@ -31,5 +31,9 @@ export function isFrontendOnly() {
     return ["1", "true", "yes", "on"].includes(normalized);
   }
 
+  if (!process.env.DATABASE_URL) {
+    return true;
+  }
+
   return !hasGeneratedPrismaClient();
 }
