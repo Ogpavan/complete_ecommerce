@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { isFrontendOnly } from "@/lib/server/frontendOnly";
 
 type MessageType = "success" | "error";
 type AdminView = "overview" | "catalog" | "products" | "orders" | "categories";
@@ -137,6 +138,9 @@ async function runAdminAction(viewRaw: string, work: () => Promise<string>) {
   let message = "Action completed.";
 
   try {
+    if (isFrontendOnly()) {
+      throw new Error("Admin actions are disabled in frontend-only mode.");
+    }
     message = await work();
     revalidatePath("/admin");
   } catch (error) {

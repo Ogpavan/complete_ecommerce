@@ -1,11 +1,28 @@
 import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isFrontendOnly } from "@/lib/server/frontendOnly";
+import { storefrontProducts } from "@/data/products";
 import type { CartSummary } from "@/lib/types";
 
 export const CART_COOKIE_NAME = "cart_session";
 
 const CART_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
+const FRONTEND_ONLY_STOCK = 20;
+const FRONTEND_ONLY_CURRENCY = "USD";
+const FRONTEND_ONLY_VARIANT_TITLE = "Default";
+
+type FrontendCart = {
+  id: number;
+  sessionToken: string;
+  currency: string;
+  items: CartSummary["items"];
+};
+
+const frontendCartsByToken = new Map<string, FrontendCart>();
+const frontendCartsById = new Map<number, FrontendCart>();
+let frontendCartId = 1;
+let frontendItemId = 1;
 
 export class CartError extends Error {
   status: number;
@@ -28,6 +45,55 @@ function sanitizeQuantity(value: number | undefined) {
   }
 
   return Math.max(1, Math.floor(value));
+}
+
+function toFrontendVariantId(productId: number) {
+  return productId * 10;
+}
+
+function getFrontendProductById(productId: number) {
+  return storefrontProducts.find((product) => product.id === productId) ?? null;
+}
+
+function getOrCreateFrontendCart(sessionToken: string) {
+  const existing = frontendCartsByToken.get(sessionToken);
+  if (existing) {
+    return existing;
+  }
+
+  const cart: FrontendCart = {
+    id: frontendCartId++,
+    sessionToken,
+    currency: FRONTEND_ONLY_CURRENCY,
+    items: []
+  };
+
+  frontendCartsByToken.set(sessionToken, cart);
+  frontendCartsById.set(cart.id, cart);
+  return cart;
+}
+
+function getFrontendCartById(cartId: number) {
+  return frontendCartsById.get(cartId) ?? null;
+}
+
+function buildFrontendCartSummary(cart: FrontendCart): CartSummary {
+  const subtotal = Number(
+    cart.items.reduce((sum, item) => sum + Number(item.lineTotal ?? 0), 0).toFixed(2)
+  );
+  const itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+
+  return {
+    id: cart.id,
+    currency: cart.currency,
+    subtotal,
+    itemCount,
+    items: cart.items.map((item) => ({
+      ...item,
+      stock: FRONTEND_ONLY_STOCK,
+      inStock: FRONTEND_ONLY_STOCK >= item.quantity
+    }))
+  };
 }
 
 export function attachCartCookie(response: NextResponse, sessionToken: string) {
@@ -121,6 +187,21 @@ async function loadCartSummary(cartId: number): Promise<CartSummary> {
 }
 
 export async function ensureCartFromRequest(request: NextRequest) {
+  if (isFrontendOnly()) {
+    const existingToken = request.cookies.get(CART_COOKIE_NAME)?.value;
+    const sessionToken = existingToken || randomUUID();
+    const shouldSetCookie = !existingToken;
+    const cart = getOrCreateFrontendCart(sessionToken);
+    const summary = buildFrontendCartSummary(cart);
+
+    return {
+      cartId: cart.id,
+      sessionToken,
+      shouldSetCookie,
+      summary
+    };
+  }
+
   const existingToken = request.cookies.get(CART_COOKIE_NAME)?.value;
   const sessionToken = existingToken || randomUUID();
   const shouldSetCookie = !existingToken;
@@ -170,6 +251,59 @@ export async function addItemToCart(input: {
   variantId: number;
   quantity?: number;
 }) {
+  if (isFrontendOnly()) {
+    const cart = getFrontendCartById(input.cartId);
+    if (!cart) {
+      throw new CartError(404, "CART_NOT_FOUND", "Cart not found.");
+    }
+
+    const product = getFrontendProductById(input.productId);
+    if (!product) {
+      throw new CartError(404, "VARIANT_NOT_FOUND", "Product variant not found.");
+    }
+
+    const expectedVariantId = toFrontendVariantId(product.id);
+    if (input.variantId !== expectedVariantId) {
+      throw new CartError(404, "VARIANT_NOT_FOUND", "Product variant not found.");
+    }
+
+    const quantity = sanitizeQuantity(input.quantity);
+    const existing = cart.items.find((item) => item.variantId === expectedVariantId);
+    const nextQuantity = (existing?.quantity ?? 0) + quantity;
+
+    if (nextQuantity > FRONTEND_ONLY_STOCK) {
+      throw new CartError(409, "INSUFFICIENT_STOCK", "Requested quantity exceeds available stock.");
+    }
+
+    const unitPrice = Number(product.price);
+    const lineTotal = Number((unitPrice * nextQuantity).toFixed(2));
+
+    if (existing) {
+      existing.quantity = nextQuantity;
+      existing.unitPrice = unitPrice;
+      existing.lineTotal = lineTotal;
+      existing.inStock = true;
+      existing.stock = FRONTEND_ONLY_STOCK;
+    } else {
+      cart.items.push({
+        id: frontendItemId++,
+        productId: product.id,
+        productSlug: product.slug,
+        variantId: expectedVariantId,
+        name: product.name,
+        variantName: FRONTEND_ONLY_VARIANT_TITLE,
+        image: product.image,
+        quantity: nextQuantity,
+        unitPrice,
+        lineTotal,
+        stock: FRONTEND_ONLY_STOCK,
+        inStock: true
+      });
+    }
+
+    return buildFrontendCartSummary(cart);
+  }
+
   const quantity = sanitizeQuantity(input.quantity);
   const variant = await resolveVariantForCart(input.productId, input.variantId);
   const unitPrice = toNumber(variant.price);
@@ -223,6 +357,34 @@ export async function updateCartItemQuantity(input: {
   itemId: number;
   quantity: number;
 }) {
+  if (isFrontendOnly()) {
+    const cart = getFrontendCartById(input.cartId);
+    if (!cart) {
+      throw new CartError(404, "CART_NOT_FOUND", "Cart not found.");
+    }
+
+    const item = cart.items.find((entry) => entry.id === input.itemId);
+    if (!item) {
+      throw new CartError(404, "ITEM_NOT_FOUND", "Cart item not found.");
+    }
+
+    if (input.quantity <= 0) {
+      cart.items = cart.items.filter((entry) => entry.id !== input.itemId);
+      return buildFrontendCartSummary(cart);
+    }
+
+    const quantity = Math.floor(input.quantity);
+    if (quantity > FRONTEND_ONLY_STOCK) {
+      throw new CartError(409, "INSUFFICIENT_STOCK", "Requested quantity exceeds available stock.");
+    }
+
+    item.quantity = quantity;
+    item.lineTotal = Number((item.unitPrice * quantity).toFixed(2));
+    item.stock = FRONTEND_ONLY_STOCK;
+    item.inStock = true;
+    return buildFrontendCartSummary(cart);
+  }
+
   const item = await prisma.cartItem.findFirst({
     where: {
       id: input.itemId,
@@ -264,6 +426,20 @@ export async function updateCartItemQuantity(input: {
 }
 
 export async function removeCartItem(input: { cartId: number; itemId: number }) {
+  if (isFrontendOnly()) {
+    const cart = getFrontendCartById(input.cartId);
+    if (!cart) {
+      throw new CartError(404, "CART_NOT_FOUND", "Cart not found.");
+    }
+
+    const previousLength = cart.items.length;
+    cart.items = cart.items.filter((entry) => entry.id !== input.itemId);
+    if (cart.items.length === previousLength) {
+      throw new CartError(404, "ITEM_NOT_FOUND", "Cart item not found.");
+    }
+    return buildFrontendCartSummary(cart);
+  }
+
   const removed = await prisma.cartItem.deleteMany({
     where: {
       id: input.itemId,
@@ -279,6 +455,15 @@ export async function removeCartItem(input: { cartId: number; itemId: number }) 
 }
 
 export async function clearCart(cartId: number) {
+  if (isFrontendOnly()) {
+    const cart = getFrontendCartById(cartId);
+    if (!cart) {
+      throw new CartError(404, "CART_NOT_FOUND", "Cart not found.");
+    }
+    cart.items = [];
+    return buildFrontendCartSummary(cart);
+  }
+
   await prisma.cartItem.deleteMany({
     where: { cartId }
   });
@@ -292,4 +477,24 @@ export async function clearCart(cartId: number) {
   });
 
   return loadCartSummary(cartId);
+}
+
+export function getFrontendCartSummaryById(cartId: number) {
+  if (!isFrontendOnly()) {
+    return null;
+  }
+  const cart = getFrontendCartById(cartId);
+  return cart ? buildFrontendCartSummary(cart) : null;
+}
+
+export function clearFrontendCartById(cartId: number) {
+  if (!isFrontendOnly()) {
+    return null;
+  }
+  const cart = getFrontendCartById(cartId);
+  if (!cart) {
+    return null;
+  }
+  cart.items = [];
+  return buildFrontendCartSummary(cart);
 }

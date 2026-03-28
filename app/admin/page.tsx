@@ -17,6 +17,7 @@ import {
   X
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { isFrontendOnly } from "@/lib/server/frontendOnly";
 import {
   createCategoryAction,
   createProductAction,
@@ -146,6 +147,27 @@ function badgeClass(active: boolean) {
 }
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
+  if (isFrontendOnly()) {
+    return (
+      <main className="min-h-screen bg-[#f7f8f6] text-gray-900">
+        <section className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-6 text-center">
+          <p className="text-[11px] font-semibold tracking-[0.2em] text-gray-500 uppercase">Admin Panel</p>
+          <h1 className="mt-3 text-3xl font-semibold">Admin features are disabled</h1>
+          <p className="mt-4 text-sm text-gray-600">
+            This project is running in frontend-only mode, so the admin dashboard and database actions are
+            unavailable.
+          </p>
+          <Link
+            href="/"
+            className="mt-6 inline-flex items-center justify-center border border-gray-900 px-5 py-2.5 text-sm font-medium text-gray-900 transition hover:bg-black hover:text-white"
+          >
+            Return to storefront
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
   const params = searchParams ? await searchParams : {};
   const success = pickFirst(params.success);
   const error = pickFirst(params.error);

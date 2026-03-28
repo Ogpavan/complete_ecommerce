@@ -1,10 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { CartError } from "@/lib/server/cart";
+import { isFrontendOnly } from "@/lib/server/frontendOnly";
+import { clearFrontendCartById, getFrontendCartSummaryById } from "@/lib/server/cart";
 import type { CheckoutInput, OrderSummary } from "@/lib/types";
 
 const TAX_RATE = 0.1;
 const FREE_SHIPPING_THRESHOLD = 75;
 const STANDARD_SHIPPING = 8;
+const FRONTEND_ONLY_ORDERS: OrderSummary[] = [];
+let frontendOrderId = 1;
 
 function toNumber(value: unknown) {
   return Number(value ?? 0);
@@ -202,6 +206,68 @@ function mapOrderSummary(order: {
 }
 
 export async function createOrderFromCart(cartId: number, payload: CheckoutInput) {
+  if (isFrontendOnly()) {
+    const cart = getFrontendCartSummaryById(cartId);
+    if (!cart) {
+      throw new CartError(404, "CART_NOT_FOUND", "Cart not found.");
+    }
+
+    if (cart.items.length === 0) {
+      throw new CartError(400, "EMPTY_CART", "Your cart is empty.");
+    }
+
+    const subtotal = Number(cart.subtotal.toFixed(2));
+    const shipping =
+      payload.shippingMethod.toLowerCase() === "express"
+        ? 15
+        : subtotal >= FREE_SHIPPING_THRESHOLD
+          ? 0
+          : STANDARD_SHIPPING;
+    const tax = Number((subtotal * TAX_RATE).toFixed(2));
+    const total = Number((subtotal + shipping + tax).toFixed(2));
+    const orderNumber = createOrderNumber();
+
+    const order: OrderSummary = {
+      id: frontendOrderId++,
+      orderNumber,
+      status: "PLACED",
+      paymentStatus: "PAID",
+      fulfillmentStatus: "UNFULFILLED",
+      currency: cart.currency,
+      subtotal,
+      tax,
+      shipping,
+      total,
+      email: payload.email,
+      customerFirstName: payload.firstName,
+      customerLastName: payload.lastName,
+      shippingAddress1: payload.address1,
+      shippingAddress2: payload.address2 || null,
+      shippingCity: payload.city,
+      shippingState: payload.state || null,
+      shippingPostalCode: payload.postalCode,
+      shippingCountry: payload.country,
+      shippingMethod: payload.shippingMethod,
+      createdAt: new Date().toISOString(),
+      items: cart.items.map((item) => ({
+        id: item.id,
+        productId: item.productId,
+        variantId: item.variantId,
+        productName: item.name,
+        variantName: item.variantName,
+        sku: `ST-${item.productSlug.replace(/-/g, "_").toUpperCase()}-${item.productId}`,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        lineTotal: item.lineTotal,
+        image: item.image || null
+      }))
+    };
+
+    FRONTEND_ONLY_ORDERS.unshift(order);
+    clearFrontendCartById(cartId);
+    return order;
+  }
+
   const cart = await prisma.cart.findUnique({
     where: { id: cartId },
     include: {
@@ -335,6 +401,10 @@ export async function createOrderFromCart(cartId: number, payload: CheckoutInput
 }
 
 export async function getOrderByNumber(orderNumber: string) {
+  if (isFrontendOnly()) {
+    return FRONTEND_ONLY_ORDERS.find((order) => order.orderNumber === orderNumber) ?? null;
+  }
+
   const order = await prisma.order.findUnique({
     where: { orderNumber },
     include: {

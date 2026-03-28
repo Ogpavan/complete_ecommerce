@@ -1,5 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { isFrontendOnly } from "@/lib/server/frontendOnly";
+import { storefrontProducts } from "@/data/products";
 import type {
   CategorySummary,
   HomePayload,
@@ -12,6 +14,8 @@ import type {
 
 const DEFAULT_PAGE_SIZE = 12;
 const MAX_PAGE_SIZE = 200;
+const FRONTEND_ONLY_STOCK = 20;
+const FRONTEND_ONLY_VARIANT_TITLE = "Default";
 
 const productInclude = {
   category: true,
@@ -32,6 +36,117 @@ function toNumber(value: Prisma.Decimal | number | null | undefined) {
   }
 
   return Number(value);
+}
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function toFrontendVariantId(productId: number) {
+  return productId * 10;
+}
+
+function getFrontendCategorySummaries(): CategorySummary[] {
+  const counts = new Map<string, { name: string; slug: string; count: number }>();
+
+  for (const product of storefrontProducts) {
+    const collections = product.collections?.length ? product.collections : ["Catalog"];
+    for (const collection of collections) {
+      const slug = slugify(collection);
+      const entry = counts.get(slug);
+      if (entry) {
+        entry.count += 1;
+      } else {
+        counts.set(slug, { name: collection, slug, count: 1 });
+      }
+    }
+  }
+
+  const entries = Array.from(counts.values());
+  if (entries.length === 0) {
+    entries.push({ name: "Catalog", slug: "catalog", count: storefrontProducts.length });
+  }
+
+  return entries.map((entry, index) => ({
+    id: index + 1,
+    name: entry.name,
+    slug: entry.slug,
+    description: null,
+    imageUrl: null,
+    productCount: entry.count
+  }));
+}
+
+function toFrontendProductCard(product: (typeof storefrontProducts)[number]): ProductCardSummary {
+  const category = product.collections?.[0] ?? "Catalog";
+
+  return {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    defaultVariantId: toFrontendVariantId(product.id),
+    price: product.price,
+    image: product.image,
+    images: product.images,
+    category,
+    categorySlug: slugify(category),
+    inStock: true,
+    stock: FRONTEND_ONLY_STOCK,
+    badge: product.badge === "New" ? "New" : undefined
+  };
+}
+
+function toFrontendProductDetail(product: (typeof storefrontProducts)[number]): ProductDetail {
+  const categoryName = product.collections?.[0] ?? "Catalog";
+  const categorySlug = slugify(categoryName);
+  const variantId = toFrontendVariantId(product.id);
+
+  return {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    shortDescription: null,
+    description: product.description,
+    category: {
+      id: 1,
+      name: categoryName,
+      slug: categorySlug
+    },
+    images: product.images.map((url, index) => ({
+      id: index + 1,
+      url,
+      alt: product.name,
+      sortOrder: index
+    })),
+    variants: [
+      {
+        id: variantId,
+        title: FRONTEND_ONLY_VARIANT_TITLE,
+        sku: `ST-${product.slug.replace(/-/g, "_").toUpperCase()}-${product.id}`,
+        price: product.price,
+        stock: FRONTEND_ONLY_STOCK,
+        inStock: true,
+        attributes: null
+      }
+    ],
+    inStock: true,
+    stock: FRONTEND_ONLY_STOCK
+  };
+}
+
+function getFrontendOnlyHomePayload(): HomePayload {
+  const featured = storefrontProducts.slice(0, 8).map(toFrontendProductCard);
+  const newest = [...storefrontProducts].sort((a, b) => b.id - a.id).slice(0, 8).map(toFrontendProductCard);
+
+  return {
+    featured,
+    newest,
+    categories: getFrontendCategorySummaries()
+  };
 }
 
 function parseAttributes(value: string | null): Record<string, string> | null {
@@ -95,6 +210,10 @@ function toVariantSummary(variant: ProductWithRelations["variants"][number]): Pr
 }
 
 export async function getCategoriesSummary(): Promise<CategorySummary[]> {
+  if (isFrontendOnly()) {
+    return getFrontendCategorySummaries();
+  }
+
   const categories = await prisma.category.findMany({
     orderBy: { name: "asc" },
     include: {
@@ -116,6 +235,10 @@ export async function getCategoriesSummary(): Promise<CategorySummary[]> {
 }
 
 export async function getHomePayload(): Promise<HomePayload> {
+  if (isFrontendOnly()) {
+    return getFrontendOnlyHomePayload();
+  }
+
   const featuredBase = await prisma.product.findMany({
     where: { isActive: true, featured: true },
     include: productInclude,
@@ -207,6 +330,65 @@ export async function getProductsPayload(params: GetProductsParams): Promise<Pro
   const search = params.search ? String(params.search).trim() : null;
   const inStockOnly = params.inStockOnly === true;
 
+  if (isFrontendOnly()) {
+    const normalizedCategory = category ? slugify(category) : null;
+    const normalizedSearch = search ? search.toLowerCase() : null;
+
+    const filtered = storefrontProducts.filter((product) => {
+      const collections = product.collections?.length ? product.collections : ["Catalog"];
+      if (normalizedCategory) {
+        const matchesCategory = collections.some((collection) => slugify(collection) === normalizedCategory);
+        if (!matchesCategory) {
+          return false;
+        }
+      }
+
+      if (normalizedSearch) {
+        const haystack = `${product.name} ${product.description}`.toLowerCase();
+        if (!haystack.includes(normalizedSearch)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sort) {
+        case "name-asc":
+          return a.name.localeCompare(b.name);
+        case "name-desc":
+          return b.name.localeCompare(a.name);
+        case "price-asc":
+          return a.price - b.price;
+        case "price-desc":
+          return b.price - a.price;
+        case "newest":
+        default:
+          return b.id - a.id;
+      }
+    });
+
+    const total = sorted.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const currentPage = Math.min(page, totalPages);
+    const items = sorted.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+    return {
+      query: {
+        page: currentPage,
+        pageSize,
+        total,
+        totalPages,
+        category,
+        search,
+        inStockOnly,
+        sort
+      },
+      items: items.map(toFrontendProductCard)
+    };
+  }
+
   const where: Prisma.ProductWhereInput = {
     isActive: true
   };
@@ -267,6 +449,23 @@ export async function getProductDetailPayload(slugInput: string): Promise<Produc
   const slug = String(slugInput || "").trim();
   if (!slug) {
     return null;
+  }
+
+  if (isFrontendOnly()) {
+    const product = storefrontProducts.find((entry) => entry.slug === slug);
+    if (!product) {
+      return null;
+    }
+
+    const related = storefrontProducts
+      .filter((entry) => entry.slug !== slug)
+      .slice(0, 4)
+      .map(toFrontendProductCard);
+
+    return {
+      product: toFrontendProductDetail(product),
+      related
+    };
   }
 
   const product = await prisma.product.findFirst({

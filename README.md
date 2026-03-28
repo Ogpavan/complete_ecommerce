@@ -31,6 +31,13 @@ npm run prisma:reset
 npm run dev
 ```
 
+## Frontend-Only Mode (Vercel-ready)
+If you want to deploy the storefront without Prisma/SQL Server:
+- Set `NEXT_PUBLIC_FRONTEND_ONLY=true` (or `FRONTEND_ONLY=true`) in Vercel env vars.
+- Do not run Prisma commands. The app serves mock catalog data and in-memory cart/checkout.
+
+Frontend-only mode also auto-enables when the Prisma client is not generated.
+
 ## Quick Sign-In + OTP
 - Route: `GET /signin`
 - Enter name + phone, then verify OTP to continue.
