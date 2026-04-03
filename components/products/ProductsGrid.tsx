@@ -13,8 +13,8 @@ export default function ProductsGrid({ products, view }: ProductsGridProps) {
         view === "list" ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
       }`}
     >
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} showQuickAdd />
+      {products.map((product, index) => (
+        <ProductCard key={product.id} product={product} showQuickAdd animationDelayMs={index * 60} />
       ))}
     </div>
   );

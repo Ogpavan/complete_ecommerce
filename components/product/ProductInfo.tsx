@@ -86,7 +86,7 @@ export default function ProductInfo({
               type="button"
               aria-label="Decrease quantity"
               onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-              className="h-full px-4 text-lg text-gray-700 transition hover:bg-gray-100"
+              className="h-full px-4 text-lg text-gray-700 transition duration-300 hover:bg-gray-100 active:scale-[0.98]"
             >
               -
             </button>
@@ -97,7 +97,7 @@ export default function ProductInfo({
               type="button"
               aria-label="Increase quantity"
               onClick={() => setQuantity((prev) => Math.min(maxQuantity, prev + 1))}
-              className="h-full px-4 text-lg text-gray-700 transition hover:bg-gray-100"
+              className="h-full px-4 text-lg text-gray-700 transition duration-300 hover:bg-gray-100 active:scale-[0.98]"
             >
               +
             </button>
@@ -121,7 +121,7 @@ export default function ProductInfo({
                 // error state is handled in cart context
               }
             }}
-            className="h-12 flex-1 rounded-none border border-gray-300 px-6 text-sm font-medium text-gray-900 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
+            className="h-12 flex-1 rounded-none border border-gray-300 px-6 text-sm font-medium text-gray-900 transition duration-300 hover:bg-gray-100 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
           >
             {inStock ? "Add to cart" : "Out of stock"}
           </button>
@@ -139,21 +139,21 @@ export default function ProductInfo({
       </div>
 
       <div className="flex flex-wrap items-center gap-5 text-sm text-gray-600">
-        <button type="button" className="inline-flex items-center gap-2 transition hover:text-gray-900">
+        <button type="button" className="inline-flex items-center gap-2 transition duration-300 hover:text-gray-900">
           <SlidersHorizontal className="h-4 w-4" strokeWidth={1.5} />
           Compare
         </button>
         <button
           type="button"
           onClick={() => toggleItem(wishlistItem)}
-          className={`inline-flex items-center gap-2 transition hover:text-gray-900 ${
-            inWishlist ? "text-gray-900" : ""
+          className={`inline-flex items-center gap-2 transition duration-300 ${
+            inWishlist ? "text-rose-500 hover:text-rose-600" : "hover:text-gray-900"
           }`}
         >
           <Heart className={`h-4 w-4 ${inWishlist ? "fill-current" : ""}`} strokeWidth={1.5} />
           {inWishlist ? "Saved to wishlist" : "Add to wishlist"}
         </button>
-        <button type="button" className="inline-flex items-center gap-2 transition hover:text-gray-900">
+        <button type="button" className="inline-flex items-center gap-2 transition duration-300 hover:text-gray-900">
           <Share2 className="h-4 w-4" strokeWidth={1.5} />
           Share
         </button>

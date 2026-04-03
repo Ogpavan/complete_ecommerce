@@ -61,7 +61,7 @@ export default function CartDrawer() {
               type="button"
               aria-label="Close cart"
               onClick={closeCart}
-              className="inline-flex h-8 w-8 items-center justify-center border border-gray-300 text-gray-700 transition hover:bg-gray-100"
+              className="inline-flex h-8 w-8 items-center justify-center border border-gray-300 text-gray-700 transition duration-200 hover:scale-105 hover:bg-gray-100 active:scale-95"
             >
               <X className="h-4 w-4" />
             </button>
@@ -83,8 +83,14 @@ export default function CartDrawer() {
               <p className="py-10 text-center text-sm text-gray-500">Your cart is empty.</p>
             ) : (
               <div className="space-y-4">
-                {items.map((item) => (
-                  <div key={item.id} className="flex gap-3 border-b border-gray-200 pb-4">
+                {items.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className={`flex gap-3 border-b border-gray-200 pb-4 transition-all duration-300 ${
+                      isOpen ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
+                    }`}
+                    style={{ transitionDelay: isOpen ? `${index * 45}ms` : "0ms" }}
+                  >
                     <img
                       src={item.image}
                       alt={item.name}
@@ -116,7 +122,7 @@ export default function CartDrawer() {
                               // error state is handled in cart context
                             }
                           }}
-                          className="h-full px-3 text-sm text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="h-full px-3 text-sm text-gray-700 transition duration-200 hover:bg-gray-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           -
                         </button>
@@ -134,7 +140,7 @@ export default function CartDrawer() {
                               // error state is handled in cart context
                             }
                           }}
-                          className="h-full px-3 text-sm text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="h-full px-3 text-sm text-gray-700 transition duration-200 hover:bg-gray-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           +
                         </button>
@@ -152,7 +158,7 @@ export default function CartDrawer() {
                           // error state is handled in cart context
                         }
                       }}
-                      className="h-7 w-7 text-gray-500 transition hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="h-7 w-7 text-gray-500 transition duration-200 hover:scale-110 hover:text-gray-900 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -168,7 +174,7 @@ export default function CartDrawer() {
                 <button
                   key={action.label}
                   type="button"
-                  className="flex h-10 items-center justify-center gap-2 border border-gray-300 text-xs text-gray-700 transition hover:bg-gray-100"
+                  className="flex h-10 items-center justify-center gap-2 border border-gray-300 text-xs text-gray-700 transition duration-200 hover:-translate-y-0.5 hover:bg-gray-100 active:translate-y-0"
                 >
                   <action.icon className="h-3.5 w-3.5" />
                   {action.label}
@@ -184,7 +190,7 @@ export default function CartDrawer() {
             <Link
               href="/signin?next=%2Fcheckout"
               onClick={closeCart}
-              className="inline-flex h-12 w-full items-center justify-center border border-black bg-black text-sm font-medium text-white transition hover:opacity-90"
+              className="inline-flex h-12 w-full items-center justify-center border border-black bg-black text-sm font-medium text-white transition duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0"
             >
               Checkout
             </Link>

@@ -57,6 +57,7 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="Your email address"
+                suppressHydrationWarning
                 className="w-full rounded-none border border-gray-200 px-4 py-3 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-gray-400"
               />
               <button

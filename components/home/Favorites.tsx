@@ -35,8 +35,8 @@ export default function Favorites({ products }: FavoritesProps) {
           </article>
 
           <div className="grid grid-cols-2 gap-6">
-            {products.slice(0, 6).map((product) => (
-              <ProductCard key={product.id} product={product} compact />
+            {products.slice(0, 6).map((product, index) => (
+              <ProductCard key={product.id} product={product} compact animationDelayMs={index * 65} />
             ))}
           </div>
         </div>

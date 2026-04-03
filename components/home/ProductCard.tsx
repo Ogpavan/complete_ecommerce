@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Heart } from "lucide-react";
+import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import type { ProductCardSummary } from "@/lib/types";
@@ -12,6 +13,7 @@ type ProductCardProps = {
   product: HomeProduct;
   compact?: boolean;
   showQuickAdd?: boolean;
+  animationDelayMs?: number;
 };
 
 const priceFormatter = new Intl.NumberFormat("en-US", {
@@ -31,20 +33,26 @@ function normalizeImageUrl(value: string | null | undefined) {
 export default function ProductCard({
   product,
   compact = false,
-  showQuickAdd = false
+  showQuickAdd = false,
+  animationDelayMs = 0
 }: ProductCardProps) {
-  const { addItem, openCart } = useCart();
+  const { addItem, openCart, mutating } = useCart();
   const { toggleItem, isInWishlist } = useWishlist();
+  const [quantity, setQuantity] = useState(1);
   const primaryImage = normalizeImageUrl(product.images[0] ?? product.image);
   const secondaryImageCandidate = normalizeImageUrl(product.images[1]);
   const secondaryImage = secondaryImageCandidate && secondaryImageCandidate !== primaryImage
     ? secondaryImageCandidate
     : null;
   const canQuickAdd = Boolean(product.defaultVariantId) && product.inStock;
+  const maxQuantity = Math.max(product.stock, 1);
   const inWishlist = isInWishlist(product.id);
 
   return (
-    <article className="group overflow-hidden border border-gray-200 bg-white transition hover:shadow-md">
+    <article
+      className="group animate-fade-up-in overflow-hidden border border-gray-200 bg-white transition duration-300 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transform-none"
+      style={{ animationDelay: `${animationDelayMs}ms` }}
+    >
       <div className={`relative overflow-hidden ${compact ? "aspect-square" : "aspect-[4/5]"}`}>
         <Link href={`/product/${encodeURIComponent(product.slug)}`} className="block h-full w-full">
           {primaryImage ? (
@@ -82,8 +90,10 @@ export default function ProductCard({
           type="button"
           aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
           onClick={() => toggleItem(product)}
-          className={`absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center border bg-white/95 text-gray-700 transition hover:text-black ${
-            inWishlist ? "border-black" : "border-gray-300"
+          className={`absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center border bg-white/95 transition duration-300 hover:scale-105 active:scale-[0.98] ${
+            inWishlist
+              ? "border-rose-200 text-rose-500 hover:text-rose-600"
+              : "border-gray-300 text-gray-700 hover:text-black"
           }`}
         >
           <Heart className={`h-4 w-4 ${inWishlist ? "fill-current" : ""}`} strokeWidth={1.8} />
@@ -91,29 +101,55 @@ export default function ProductCard({
 
         {showQuickAdd ? (
           <div className="pointer-events-none absolute inset-x-4 bottom-4 translate-y-3 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-            <button
-              type="button"
-              disabled={!canQuickAdd}
-              onClick={async () => {
-                if (!product.defaultVariantId) {
-                  return;
-                }
+            <div className="pointer-events-auto flex items-stretch gap-2">
+              <div className="inline-flex h-11 items-center border border-gray-300 bg-white">
+                <button
+                  type="button"
+                  aria-label="Decrease quantity"
+                  disabled={!canQuickAdd || mutating}
+                  onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                  className="h-full px-3 text-sm text-gray-700 transition duration-300 hover:bg-gray-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  -
+                </button>
+                <span className="inline-flex h-full min-w-10 items-center justify-center border-x border-gray-300 text-xs font-medium text-gray-900">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  aria-label="Increase quantity"
+                  disabled={!canQuickAdd || mutating || quantity >= maxQuantity}
+                  onClick={() => setQuantity((prev) => Math.min(maxQuantity, prev + 1))}
+                  className="h-full px-3 text-sm text-gray-700 transition duration-300 hover:bg-gray-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  +
+                </button>
+              </div>
 
-                try {
-                  await addItem({
-                    productId: product.id,
-                    variantId: product.defaultVariantId,
-                    quantity: 1
-                  });
-                  openCart();
-                } catch {
-                  // error state is handled in cart context
-                }
-              }}
-              className="pointer-events-auto h-11 w-full border border-black bg-white text-sm font-medium text-gray-900 transition hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400 disabled:hover:bg-white"
-            >
-              {canQuickAdd ? "Quick Add" : "Out of Stock"}
-            </button>
+              <button
+                type="button"
+                disabled={!canQuickAdd || mutating}
+                onClick={async () => {
+                  if (!product.defaultVariantId) {
+                    return;
+                  }
+
+                  try {
+                    await addItem({
+                      productId: product.id,
+                      variantId: product.defaultVariantId,
+                      quantity
+                    });
+                    openCart();
+                  } catch {
+                    // error state is handled in cart context
+                  }
+                }}
+                className="h-11 flex-1 border border-black bg-black px-3 text-sm font-medium text-white transition duration-300 hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-white disabled:text-gray-400"
+              >
+                {canQuickAdd ? "Add to cart" : "Out of stock"}
+              </button>
+            </div>
           </div>
         ) : null}
       </div>

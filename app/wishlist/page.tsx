@@ -62,7 +62,7 @@ export default function WishlistPage() {
               <button
                 type="button"
                 onClick={clearWishlist}
-                className="text-sm font-medium text-gray-600 transition hover:text-black"
+                className="text-sm font-medium text-gray-600 transition duration-200 hover:text-black"
               >
                 Clear wishlist
               </button>
@@ -103,7 +103,7 @@ export default function WishlistPage() {
                         <button
                           type="button"
                           onClick={() => removeItem(item.id)}
-                          className="h-10 flex-1 border border-gray-300 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                          className="h-10 flex-1 border border-gray-300 text-sm font-medium text-gray-700 transition duration-200 hover:-translate-y-0.5 hover:bg-gray-100 active:translate-y-0"
                         >
                           Remove
                         </button>
@@ -126,7 +126,7 @@ export default function WishlistPage() {
                               // error state is handled in cart context
                             }
                           }}
-                          className="h-10 flex-1 border border-black bg-black text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-white disabled:text-gray-400"
+                          className="h-10 flex-1 border border-black bg-black text-sm font-medium text-white transition duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0 disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-white disabled:text-gray-400 disabled:hover:translate-y-0"
                         >
                           {canAddToCart ? "Add to cart" : "Out of stock"}
                         </button>

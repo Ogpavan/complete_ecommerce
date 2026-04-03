@@ -17,8 +17,8 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
         </div>
 
         <div className="mt-10 grid grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-10">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {products.map((product, index) => (
+            <ProductCard key={product.id} product={product} animationDelayMs={index * 70} />
           ))}
         </div>
       </div>

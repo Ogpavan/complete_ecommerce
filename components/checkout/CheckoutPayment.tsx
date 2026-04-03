@@ -74,7 +74,7 @@ export default function CheckoutPayment({
         <button
           type="submit"
           disabled={submitting}
-          className="mt-6 h-12 w-full rounded-md bg-black text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-6 h-12 w-full rounded-md bg-black text-sm font-medium text-white transition duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
         >
           {submitLabel}
         </button>

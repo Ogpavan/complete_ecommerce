@@ -62,7 +62,7 @@ export default function CheckoutPage() {
         <div className="mt-8">
           <Link
             href="/signin?next=%2Fcheckout"
-            className="inline-flex h-11 items-center border border-black bg-black px-6 text-sm font-medium text-white transition hover:opacity-90"
+            className="inline-flex h-11 items-center border border-black bg-black px-6 text-sm font-medium text-white transition duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0"
           >
             Sign in with OTP
           </Link>
@@ -80,13 +80,13 @@ export default function CheckoutPage() {
         <div className="mt-8 flex justify-center gap-3">
           <Link
             href="/products"
-            className="inline-flex h-11 items-center border border-black bg-black px-6 text-sm font-medium text-white transition hover:opacity-90"
+            className="inline-flex h-11 items-center border border-black bg-black px-6 text-sm font-medium text-white transition duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0"
           >
             Continue shopping
           </Link>
           <Link
             href="/cart"
-            className="inline-flex h-11 items-center border border-gray-300 px-6 text-sm font-medium text-gray-800 transition hover:bg-gray-100"
+            className="inline-flex h-11 items-center border border-gray-300 px-6 text-sm font-medium text-gray-800 transition duration-200 hover:-translate-y-0.5 hover:bg-gray-100 active:translate-y-0"
           >
             Back to cart
           </Link>
@@ -203,7 +203,7 @@ export default function CheckoutPage() {
                   onChange={() => setShippingMethod("standard")}
                   className="peer sr-only"
                 />
-                <span className="flex items-center justify-between rounded-none border border-gray-300 p-4 peer-checked:border-black">
+                <span className="flex items-center justify-between rounded-none border border-gray-300 p-4 transition duration-200 peer-checked:border-black peer-checked:bg-gray-50">
                   <span className="text-sm font-medium text-gray-900">Standard Shipping</span>
                   <span className="text-sm text-gray-700">Free over $75</span>
                 </span>
@@ -217,7 +217,7 @@ export default function CheckoutPage() {
                   onChange={() => setShippingMethod("express")}
                   className="peer sr-only"
                 />
-                <span className="flex items-center justify-between rounded-none border border-gray-300 p-4 peer-checked:border-black">
+                <span className="flex items-center justify-between rounded-none border border-gray-300 p-4 transition duration-200 peer-checked:border-black peer-checked:bg-gray-50">
                   <span className="text-sm font-medium text-gray-900">Express Shipping</span>
                   <span className="text-sm text-gray-700">$15.00</span>
                 </span>
@@ -237,7 +237,7 @@ export default function CheckoutPage() {
                   onChange={() => setPaymentMethod("upi")}
                   className="peer sr-only"
                 />
-                <span className="flex h-11 items-center justify-center rounded-none border border-gray-300 text-sm text-gray-700 peer-checked:border-black peer-checked:text-gray-900">
+                <span className="flex h-11 items-center justify-center rounded-none border border-gray-300 text-sm text-gray-700 transition duration-200 peer-checked:border-black peer-checked:bg-gray-50 peer-checked:text-gray-900">
                   UPI
                 </span>
               </label>
@@ -250,7 +250,7 @@ export default function CheckoutPage() {
                   onChange={() => setPaymentMethod("card")}
                   className="peer sr-only"
                 />
-                <span className="flex h-11 items-center justify-center rounded-none border border-gray-300 text-sm text-gray-700 peer-checked:border-black peer-checked:text-gray-900">
+                <span className="flex h-11 items-center justify-center rounded-none border border-gray-300 text-sm text-gray-700 transition duration-200 peer-checked:border-black peer-checked:bg-gray-50 peer-checked:text-gray-900">
                   Card
                 </span>
               </label>
@@ -335,7 +335,7 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="h-12 w-full rounded-none bg-black text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="h-12 w-full rounded-none bg-black text-sm font-medium text-white transition duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
           >
             {isSubmitting ? "Placing order..." : "Place order"}
           </button>
